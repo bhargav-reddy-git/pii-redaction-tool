@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PII Redaction Tool</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <h1>PII REDACTION TOOL</h1>
+    <p class="subtitle">Upload a DOCX, PDF, or TXT file to detect and redact personal information.</p>
+
+    <input type="file" id="fileInput" accept=".docx,.pdf,.txt">
+    <button id="redactBtn">Redact PII</button>
+
+    <div id="message" class="message" hidden></div>
+
+    <section id="summary" hidden>
+      <h2>Detection Summary</h2>
+      <table>
+        <tbody id="summaryBody"></tbody>
+      </table>
+      <div class="downloads">
+        <a id="downloadDocx" class="button" href="#">Download Redacted DOCX</a>
+        <a id="downloadAudit" class="button secondary" href="#">Download Audit JSON</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TYPES = ["PERSON","EMAIL","PHONE","COMPANY","ADDRESS","SSN","CREDIT_CARD","DOB","IP_ADDRESS"];
+    const fileInput = document.getElementById('fileInput');
+    const btn = document.getElementById('redactBtn');
+    const msg = document.getElementById('message');
+    const summary = document.getElementById('summary');
+    const body = document.getElementById('summaryBody');
+
+    btn.addEventListener('click', async () => {
+      const file = fileInput.files[0];
+      if (!file) { showMsg('Please choose a file first.', 'error'); return; }
+
+      summary.hidden = true;
+      showMsg('Processing...', 'info');
+      btn.disabled = true;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const resp = await fetch('/redact', { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (!resp.ok) { showMsg(data.error || 'Redaction failed.', 'error'); return; }
+
+        showMsg('Redaction complete.', 'success');
+        const counts = data.stats.entities_by_type || {};
+        body.innerHTML = TYPES.map(t => `<tr><td>${t}</td><td>${counts[t] || 0}</td></tr>`).join('');
+
+        document.getElementById('downloadDocx').href = `/download/${data.job_id}/docx`;
+        document.getElementById('downloadAudit').href = `/download/${data.job_id}/audit`;
+        summary.hidden = false;
+      } catch (err) {
+        showMsg('Unexpected error: ' + err, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    function showMsg(text, kind) {
+      msg.textContent = text;
+      msg.className = 'message ' + kind;
+      msg.hidden = false;
+    }
+  </script>
+</body>
+</html>

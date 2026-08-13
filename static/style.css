@@ -1,0 +1,13 @@
+body { font-family: Arial, sans-serif; background: #f5f6f8; margin: 0; }
+.container { max-width: 640px; margin: 48px auto; padding: 28px; background: #fff; border: 1px solid #ddd; border-radius: 6px; }
+h1 { font-size: 1.4rem; margin-top: 0; }
+.subtitle { color: #666; }
+button, .button { padding: 8px 16px; border: none; border-radius: 4px; background: #1f4e8c; color: #fff; cursor: pointer; text-decoration: none; display: inline-block; margin-right: 8px; }
+.button.secondary { background: #fff; color: #1f4e8c; border: 1px solid #1f4e8c; }
+.message { margin-top: 16px; padding: 10px 14px; border-radius: 4px; }
+.message.info { background: #eef3fa; color: #1f4e8c; }
+.message.success { background: #eaf6ec; color: #1a7f37; }
+.message.error { background: #fbeceb; color: #b3261e; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+.downloads { margin-top: 16px; }
