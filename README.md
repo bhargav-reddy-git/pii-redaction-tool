@@ -95,78 +95,7 @@ formats — no external library.
   original PDF layout is not reconstructed. This is a stated scope
   simplification.
 
-## Web application
 
-One Flask page (`app.py` + `templates/index.html`): choose a file,
-click **Redact PII**, see a per-type count table, download the redacted
-DOCX and the audit JSON. No JavaScript framework, no database, no
-background workers — a single synchronous request does the work.
-`GET /health` returns `{"status": "ok"}` for basic monitoring/Render's
-health check.
-
-## Local execution
-
-```bash
-pip install -r requirements.txt
-python app.py                          # http://127.0.0.1:5000
-```
-
-## Render deployment
-
-`render.yaml`:
-```yaml
-services:
-  - type: web
-    name: pii-redaction-tool
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
-    healthCheckPath: /health
-```
-Push to a Git provider, create a Render Blueprint pointing at the repo,
-and Render builds and starts it automatically. No Docker, no database,
-no external services required.
-
-## Limitations
-
-This is the most important section to understand before reading the
-evaluation numbers — the detector is simple **on purpose**, and its
-weak points are direct, predictable consequences of that simplicity:
-
-- **PERSON recall is low for names with no title/role marker next to
-  them.** A director's name sitting alone in a table cell (no "Mr." or
-  "Director:" text in the *same* cell — the label is in a different
-  column) will be missed. Confirmed on the real prospectus: 11 of 13
-  gold PERSON entities were missed for exactly this reason.
-- **ADDRESS recall is very low** for the same reason — several real
-  addresses (e.g. a director's home address) have no anchor phrase
-  ("Registered Office", "Address:") in the same cell as the address
-  text, so the anchor-based rule has nothing to trigger on. Confirmed:
-  0 of 7 gold ADDRESS entities were caught.
-- **COMPANY suffix list is intentionally short** (Limited/Ltd/Private
-  Limited/Pvt Ltd/LLP/LLC/Inc/Corp/Corporation) — it does not include
-  "Trust", so promoter family trusts (e.g. "DHAULAGIRI FAMILY TRUST")
-  are not detected as COMPANY. This is a direct, explicit tradeoff for
-  keeping the suffix list small and explainable.
-- **No general-purpose name detection** — this was an explicit design
-  choice (see "Detection strategy"), not an oversight.
-- **PDF/TXT output doesn't preserve original layout** — always a fresh
-  DOCX with plain paragraphs.
-- SSN/CREDIT_CARD/DOB/IP_ADDRESS have **zero real instances** in the
-  supplied document (a real Indian IPO filing doesn't contain any of
-  these concepts), so there is nothing to measure recall against for
-  those types in this evaluation — see `evaluation_report.md`.
-
-## False positives / false negatives
-
-See `evaluation_report.md` for the full, real per-type breakdown. In
-short: **on the 80-entity gold set, this detector produced zero false
-positives** — every false positive from the earlier, spaCy-based
-version of this project (place-name fragments mistagged as names,
-regulatory jargon mistagged as names) disappeared once name detection
-was narrowed to explicit title/role markers only. The tradeoff is lower
-recall (PERSON and ADDRESS specifically), which is the correct and
-expected result of a narrower, simpler rule set.
 
 ## Design tradeoffs
 
