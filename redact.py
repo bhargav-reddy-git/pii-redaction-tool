@@ -1,20 +1,3 @@
-"""
-redact.py — core PII detection, replacement, and document processing.
-
-This is a deliberately SIMPLE, rule-based implementation for a college
-assignment. It uses only regular expressions and small context rules —
-no NER model, no external ML library. This is explicit in the design:
-a rule-based approach is easy to explain, easy to reproduce, and has
-well-understood limitations (see README.md "Limitations").
-
-Sections in this file:
-  1. Entity representation + overlap resolution
-  2. Structured detectors (EMAIL, PHONE, SSN, CREDIT_CARD, IP, DOB)
-  3. Context-rule detectors (PERSON, COMPANY, ADDRESS)
-  4. Synthetic replacement (simple dict-based, no external library)
-  5. Document processing (DOCX / PDF / TXT -> redacted DOCX)
-"""
-
 import os
 import re
 from dataclasses import dataclass, field
