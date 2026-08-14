@@ -1,23 +1,3 @@
-"""evaluate.py — simple, viva-friendly evaluation.
-
-We do not have a pre-labelled PII dataset for the supplied prospectus,
-so evaluation/gold.json is a MANUALLY VERIFIED gold set: every entry's
-text was checked to actually appear verbatim in the real document
-before being added (see the last section of this file for how it was
-built). This script:
-
-  1. Loads the gold entities.
-  2. For each one, finds its real surrounding paragraph/cell text in
-     the actual prospectus (the same context the detector would see
-     when the app processes this document for real).
-  3. Runs our detector on that context and checks whether a prediction
-     of the SAME TYPE overlaps the gold entity's span.
-  4. Counts TP / FP / FN per type and computes precision, recall, F1,
-     and an entity-level accuracy = TP / (TP + FP + FN).
-
-No pandas, no sklearn — just the standard library plus redact.py.
-"""
-
 import json
 import os
 
