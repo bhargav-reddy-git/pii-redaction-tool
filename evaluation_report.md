@@ -32,9 +32,9 @@ We did not fabricate entities to reach 200. The actual document simply
 does not contain 200 suitable, unambiguous, hand-verifiable PII
 instances of the required types combined (in particular it contains
 **zero** SSNs, credit card numbers, dates of birth, or IP addresses —
-confirmed by direct search of the extracted document text, not assumed).
+confirmed by direct search of the extracted document text).
 80 real, manually verified entities were collected instead, and that
-actual number is reported here rather than an invented 200.
+actual number is reported here 
 
 Entities were drawn from representative sections rather than one small
 paragraph: the cover-page contact/registered-office/corporate-office
@@ -144,17 +144,11 @@ design (see README), so this is an expected, not surprising, result.
 
 ## Limitations
 
-- 80 real entities, not 200 — reported honestly rather than padded; see
-  "Gold-set methodology" for exactly why.
 - DOB/SSN/CREDIT_CARD/IP_ADDRESS metrics are N/A because the source
   document has zero real instances of these types — their correctness
   as regex/Luhn/octet logic has to be judged by inspection and small
   hand-run examples, not by this evaluation.
-- The evaluation runs the detector on each gold entity's real
-  *containing paragraph/cell*, which is precisely the same granularity
-  the DOCX processor uses in production — so these numbers should be
-  representative of full-document behaviour, not just a favourable
-  hand-picked subset.
+
 - Matching requires the same type; a correct span with the wrong type
   is counted as both an FN (for the correct type) and would count as an
   FP if a same-typed gold entity for that wrong type existed nearby
