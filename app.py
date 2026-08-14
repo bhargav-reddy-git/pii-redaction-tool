@@ -1,9 +1,4 @@
-"""app.py — minimal Flask web app around redact.py.
 
-One page: choose file, click "Redact PII", see a summary, download the
-redacted DOCX and the audit JSON. No JS framework, no database, no
-background workers.
-"""
 
 import json
 import os
@@ -22,9 +17,7 @@ app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024  # 25 MB upload cap
 JOB_ROOT = os.path.join(tempfile.gettempdir(), "pii_redaction_jobs")
 os.makedirs(JOB_ROOT, exist_ok=True)
 
-# In-memory job registry: job_id -> {output_path, audit_path, filename}.
-# Kept simple on purpose — good enough for a single-instance student
-# project; not meant to survive a process restart.
+
 JOBS = {}
 
 
